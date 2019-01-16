@@ -53,11 +53,11 @@ bigNumbers :: [String]
 bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
   from1to999 = us ++ ts ++ hs
   us = ["m","b","tr","quadr","quint","sext","sept","oct","non"]
-  ts = foldl (\acc x -> acc ++ x : map (combine x) uPfxs) [] tPfxs
-  hs = foldl (\acc x -> acc ++ x : map (combine x) uPlusTpfxs) [] hPfxs
-  uPlusTpfxs = let addVow w | any (`isInfixOf` w) (drop 2 tPfxs) = w ++ "a"
+  ts = foldl (\acc x -> acc ++ x : map (combine x) uPxs) [] tPxs
+  hs = foldl (\acc x -> acc ++ x : map (combine x) uPlusTpxs) [] hPxs
+  uPlusTpxs = let addVow w | any (`isInfixOf` w) (drop 2 tPxs) = w ++ "a"
                             | otherwise = w ++ "i"
-               in uPfxs ++ map addVow ts
+               in uPxs ++ map addVow ts
   combine sx px = let ix | elem sx sExceps && px == "se" = "s"
                          | elem sx xExceps && px == "se" = "x"
                          | elem sx mExceps && elem px ["septe","nove"] = "m"
@@ -65,45 +65,45 @@ bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
                          | elem sx (sExceps ++ xExceps) && px == "tre" = "s"
                          | otherwise = ""
                   in px ++ ix ++ sx
-  from1000toInf = concatMap (genList) [1..]
-  genList n = let bigs = map (++ (concat $ replicate n "ill") ++ "i") from1to999
-              in foldl (\acc x -> acc ++ map (x ++) ("n" : from1to999)) [] bigs
+  from1000toInf = concatMap bigPxs [1..]
+  bigPxs n = let bigs = map (++ (concat $ replicate n "ill") ++ "i") from1to999
+             in foldl (\acc x -> acc ++ map (x ++) ("n" : from1to999)) [] bigs
 
 -- Units' prefixes
-uPfxs :: [String]
-uPfxs = ["un"
-        ,"duo"
-        ,"tre"
-        ,"quattuor"
-        ,"quin"
-        ,"se"
-        ,"septe"
-        ,"octo"
-        ,"nove"]
+uPxs :: [String]
+uPxs = ["un"
+       ,"duo"
+       ,"tre"
+       ,"quattuor"
+       ,"quin"
+       ,"se"
+       ,"septe"
+       ,"octo"
+       ,"nove"]
 
 -- Tenths' prefixes
-tPfxs :: [String]
-tPfxs = ["dec"
-        ,"vigint"
-        ,"trigint"
-        ,"quadragint"
-        ,"quinquagint"
-        ,"sexagint"
-        ,"septuagint"
-        ,"octogint"
-        ,"nonagint"]
+tPxs :: [String]
+tPxs = ["dec"
+       ,"vigint"
+       ,"trigint"
+       ,"quadragint"
+       ,"quinquagint"
+       ,"sexagint"
+       ,"septuagint"
+       ,"octogint"
+       ,"nonagint"]
 
 -- Hundreds'prefixes
-hPfxs :: [String]
-hPfxs = ["cent"
-        ,"ducent"
-        ,"trecent"
-        ,"quadringent"
-        ,"quingent"
-        ,"sescent"
-        ,"septingent"
-        ,"octingent"
-        ,"nongent"]
+hPxs :: [String]
+hPxs = ["cent"
+       ,"ducent"
+       ,"trecent"
+       ,"quadringent"
+       ,"quingent"
+       ,"sescent"
+       ,"septingent"
+       ,"octingent"
+       ,"nongent"]
  
 -- Exceptions for "s"
 sExceps :: [String]
@@ -129,4 +129,4 @@ mExceps = ["vigint"
           
 -- Exceptions for "n"
 nExceps :: [String]
-nExceps = filter (`notElem` "nonagint" : "nongent" : mExceps) (tPfxs ++ hPfxs)
+nExceps = filter (`notElem` "nonagint" : "nongent" : mExceps) (tPxs ++ hPxs)
