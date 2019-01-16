@@ -4,12 +4,12 @@ A simple tool for converting numbers to words. It is based on the Conway-Wechsle
 
 Examples of the main function:
 ```bash
-ghci> toWords 0
+toWords 0
 "zero"
-ghci> toWords 12345
+toWords 12345
 "twelve thousand, three hundred forty-five"
-ghci> toWords (10^3003)
-"one millillion"
+toWords (10^3003)
+"one millinillion"
 ```
 
 ### Installation:

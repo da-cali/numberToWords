@@ -55,7 +55,8 @@ bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
   us = ["m","b","tr","quadr","quint","sext","sept","oct","non"]
   ts = foldl (\acc x -> acc ++ x : map (combine x) uPfxs) [] tPfxs
   hs = foldl (\acc x -> acc ++ x : map (combine x) uPlusTpfxs) [] hPfxs
-  uPlusTpfxs = let addVow w = w ++ if any (`isInfixOf` w) (drop 2 tPfxs) then "a" else "i"
+  uPlusTpfxs = let addVow w | any (`isInfixOf` w) (drop 2 tPfxs) = w ++ "a"
+                            | otherwise = "i"
                in uPfxs ++ map addVow ts
   combine sx px = let ix | elem sx sExceps && px == "se" = "s"
                          | elem sx xExceps && px == "se" = "x"
@@ -64,9 +65,9 @@ bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
                          | elem sx (sExceps ++ xExceps) && px == "tre" = "s"
                          | otherwise = ""
                   in px ++ ix ++ sx
-  from1000toInf = concat $ map (generateLists "ill") [1..]
-  generateLists ix n = foldl (\acc x -> acc ++ x : map (x ++) from1to999) []
-                             (map (++ (concat $ replicate n ix)) from1to999)
+  from1000toInf = concatMap (genList) [1..]
+  genList n = let bigs = map (++ (concat $ replicate n "ill") ++ "i") from1to999
+              in foldl (\acc x -> acc ++ map (x ++) ("n" : from1to999)) [] bigs
 
 -- Units' prefixes
 uPfxs :: [String]
