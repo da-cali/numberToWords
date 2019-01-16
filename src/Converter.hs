@@ -56,7 +56,7 @@ bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
   ts = foldl (\acc x -> acc ++ x : map (combine x) uPfxs) [] tPfxs
   hs = foldl (\acc x -> acc ++ x : map (combine x) uPlusTpfxs) [] hPfxs
   uPlusTpfxs = let addVow w | any (`isInfixOf` w) (drop 2 tPfxs) = w ++ "a"
-                            | otherwise = "i"
+                            | otherwise = w ++ "i"
                in uPfxs ++ map addVow ts
   combine sx px = let ix | elem sx sExceps && px == "se" = "s"
                          | elem sx xExceps && px == "se" = "x"
