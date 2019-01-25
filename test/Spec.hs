@@ -2,7 +2,7 @@ import Converter
 
 main :: IO ()
 main = do
-    print(toWords 1 == "one")
+    print(toWords 0 == "zero")
     print(toWords (-99) == "minus ninety-nine")
     print(toWords 12345 == "twelve thousand, three hundred forty-five")
     print(toWords (10^165) == "one quattuorquinquagintillion")

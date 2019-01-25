@@ -1,15 +1,19 @@
 # number-to-words
 
-A simple tool for converting numbers to words. It is based on the Conway-Wechsler naming system, and it uses Haskell infinite lists to generate names of powers of 10 beyond 10^3002.
+A simple tool for converting numbers to words. It is based on the Conway-Wechsler naming system, and it uses Haskell infinite lists to generate names of powers of 10 beyond 10^3002; so in theory it can generate the name of ANY integer in the real line.
 
 Examples of the main function:
 ```bash
 toWords 0
 "zero"
+toWords (-99)
+"minus ninety-nine"
 toWords 12345
 "twelve thousand, three hundred forty-five"
 toWords (10^3003)
 "one millinillion"
+toWords (10^59052)
+"one novendecillitresoctogintasescentillion"
 ```
 
 ### Installation:

@@ -1,7 +1,6 @@
 module Converter
 
 ( toWords
-, bigNumbers
 ) where
         
 import Data.List
@@ -38,14 +37,20 @@ toWords 80 = "eighty"
 toWords 90 = "ninety"
 toWords n = composer bigNumbers 3 where
   composer (x:xs) p
-    | n < 0 = "minus " ++ toWords (-n)
-    | n < 100 = toWords (n - n `mod` 10) ++ "-" ++ toWords (n `mod` 10)
-    | n < 1000 = toWords (n `div` 100) ++ " hundred" ++
-                 if n `mod` 100 == 0 then "" else " " ++ 
-                 toWords (n `mod` 100)
-    | n < 10^(p+3) = toWords (n `div` 10^p) ++ " " ++ x ++
-                     if n `mod` 10^p == 0 then "" else ", " ++ 
-                     toWords (n `mod` 10^p)
+    | n < 0 = "minus " 
+              ++ toWords (-n)
+    | n < 100 = toWords (n - n `mod` 10) 
+                ++ "-" 
+                ++ toWords (n `mod` 10)
+    | n < 1000 = toWords (n `div` 100) 
+                 ++ " hundred" 
+                 ++ if n `mod` 100 == 0 then "" else " " 
+                 ++ toWords (n `mod` 100)
+    | n < 10^(p+3) = toWords (n `div` 10^p) 
+                     ++ " " 
+                     ++ x 
+                     ++ if n `mod` 10^p == 0 then "" else ", " 
+                     ++ toWords (n `mod` 10^p)
     | otherwise = composer xs (p+3)
 
 -- Names of large numbers
@@ -67,7 +72,7 @@ bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
                   in px ++ ix ++ sx
   from1000toInf = concatMap bigPxs [1..]
   bigPxs n = let bigs = map (++ (concat $ replicate n "ill") ++ "i") from1to999
-             in foldl' (\acc x -> acc ++ map (x ++) ("n" : from1to999)) [] bigs
+             in foldl' (\ acc x -> acc ++ map (x++) ("n" : from1to999)) [] bigs
 
 -- Units' prefixes
 uPxs :: [String]
