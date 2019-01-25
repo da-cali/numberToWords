@@ -53,8 +53,8 @@ bigNumbers :: [String]
 bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
   from1to999 = us ++ ts ++ hs
   us = ["m","b","tr","quadr","quint","sext","sept","oct","non"]
-  ts = foldl (\acc x -> acc ++ x : map (combine x) uPxs) [] tPxs
-  hs = foldl (\acc x -> acc ++ x : map (combine x) uPlusTpxs) [] hPxs
+  ts = foldl' (\ acc x -> acc ++ x : map (combine x) uPxs) [] tPxs
+  hs = foldl' (\ acc x -> acc ++ x : map (combine x) uPlusTpxs) [] hPxs
   uPlusTpxs = let addVow w | any (`isInfixOf` w) (drop 2 tPxs) = w ++ "a"
                            | otherwise = w ++ "i"
               in uPxs ++ map addVow ts
@@ -67,7 +67,7 @@ bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
                   in px ++ ix ++ sx
   from1000toInf = concatMap bigPxs [1..]
   bigPxs n = let bigs = map (++ (concat $ replicate n "ill") ++ "i") from1to999
-             in foldl (\acc x -> acc ++ map (x ++) ("n" : from1to999)) [] bigs
+             in foldl' (\acc x -> acc ++ map (x ++) ("n" : from1to999)) [] bigs
 
 -- Units' prefixes
 uPxs :: [String]
