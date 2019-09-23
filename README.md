@@ -4,15 +4,15 @@ A simple tool for converting numbers to words. It is based on the Conway-Wechsle
 
 Examples of the main function:
 ```bash
-toWords 0
+nameOf 0
 "zero"
-toWords (-99)
+nameOf (-99)
 "minus ninety-nine"
-toWords 12345
+nameOf 12345
 "twelve thousand, three hundred forty-five"
-toWords (10^3003)
+nameOf (10^3003)
 "one millinillion"
-toWords (10^59052)
+nameOf (10^59052)
 "one novendecillitresoctogintasescentillion"
 ```
 ### Usage:
