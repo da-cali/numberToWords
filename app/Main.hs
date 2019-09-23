@@ -7,4 +7,4 @@ main :: IO ()
 main = forever $ do
     putStrLn "Enter a number:"  
     number <- readLn
-    putStrLn $ toWords (number :: Integer)
+    putStrLn $ nameOf (number :: Integer)

@@ -17,9 +17,9 @@ nameOf (10^59052)
 ```
 ### Usage:
 
-Since it only requires the standard prelude, you can just copy the [source code](https://github.com/da-cali/number-to-words/blob/master/src/Converter.hs) and play with it in GHCi, or
+Since it only requires the standard prelude, you can just copy the [source code](https://github.com/da-cali/number-to-words/blob/master/src/Converter.hs) and load it in GHCi, or
 
-#### Install it:
+#### Install the command line application:
 
 1. Install [stack](https://docs.haskellstack.org/en/stable/README/):
     ```
@@ -49,7 +49,7 @@ Since it only requires the standard prelude, you can just copy the [source code]
     ```
     chmod +x number-to-words
     ```
-7. Run it:
+7. Run the application:
     ```
     ./number-to-words
     ```

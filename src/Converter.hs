@@ -38,17 +38,16 @@ nameOf 90 = "ninety"
 nameOf n | n < 0 = "minus " ++ nameOf (-n)
          | n < 100 = nameOf (n - n`mod`10) ++ '-' : nameOf (n`mod`10)
          | n < 1000 = nameOf (n`div`100) 
-                    ++ " hundred" 
-                    ++ if n`mod`100 == 0 then "" else " " 
-                    ++ nameOf (n`mod`100)
+                      ++ " hundred" 
+                      ++ if n`mod`100 == 0 then "" else " " 
+                      ++ nameOf (n`mod`100)
          | otherwise = getNameFrom (zip [3,6..] bigNumbers) where
              getNameFrom ((power,name):restOfNames)
                | n >= 10^(power+3) = getNameFrom restOfNames
                | otherwise = nameOf (n`div`10^power)
-                           ++ ' ' : name 
-                           ++ if n`mod`10^power == 0 then "" else ", "
-                           ++ nameOf (n`mod`10^power)
-
+                             ++ ' ' : name 
+                             ++ if n`mod`10^power == 0 then "" else ", "
+                             ++ nameOf (n`mod`10^power)
 
 -- Names of powers of 10 that are multiples of 3 (thousand, million, billion..)
 bigNumbers :: [String]
@@ -68,9 +67,9 @@ bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
       addVowel w = w ++ if any (`isInfixOf` w) (drop 2 tPfxs) then "a" else "i"
     in us ++ ts ++ hs
   from1000toInf = let
-    bigPxs n = foldl' (\ acc x -> acc ++ map (x++) ("n" : from1to999)) [] bigs
+    bigPfxs n = foldl' (\ acc x -> acc ++ map (x++) ("n" : from1to999)) [] bigs
       where bigs = map (++ (concat $ replicate n "ill") ++ "i") from1to999
-    in concatMap bigPxs [1..]
+    in concatMap bigPfxs [1..]
 
 -- Units' prefixes
 uPfxs :: [String]
