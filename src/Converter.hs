@@ -37,17 +37,16 @@ nameOf 80 = "eighty"
 nameOf 90 = "ninety"
 nameOf n | n < 0 = "minus " ++ nameOf (-n)
          | n < 100 = nameOf (n - n`mod`10) ++ '-' : nameOf (n`mod`10)
-         | n < 1000 = nameOf (n`div`100) 
-                      ++ " hundred" 
-                      ++ if n`mod`100 == 0 then "" else " " 
-                      ++ nameOf (n`mod`100)
-         | otherwise = getNameFrom (zip [3,6..] bigNumbers) where
-             getNameFrom ((power,name):restOfNames)
-               | n >= 10^(power+3) = getNameFrom restOfNames
-               | otherwise = nameOf (n`div`10^power)
-                             ++ ' ' : name 
-                             ++ if n`mod`10^power == 0 then "" else ", "
-                             ++ nameOf (n`mod`10^power)
+         | n < 1000 = nameOf (n`div`100) ++ " hundred" 
+                                         ++ if n`mod`100 == 0 then "" else " "
+                                         ++ nameOf (n`mod`100)
+         | otherwise = getNameFrom pairsOfNamesAndPowers where
+             pairsOfNamesAndPowers = zip bigNumbers [3,6..]
+             getNameFrom ((w,p):theRest) = if n >= 10^(p+3)
+               then getNameFrom theRest
+               else nameOf (n`div`10^p) ++ ' ' : w
+                                        ++ if n`mod`10^p == 0 then "" else ", "
+                                        ++ nameOf (n`mod`10^p)
 
 -- Names of powers of 10 that are multiples of 3 (thousand, million, billion..)
 bigNumbers :: [String]
