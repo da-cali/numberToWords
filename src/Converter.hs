@@ -1,11 +1,8 @@
-module Converter
-
-( nameOf
-) where
+module Converter where
 
 import Data.List
 
--- Converter
+-- Returns the name of the input integer.
 nameOf :: Integer -> String
 nameOf 0 = "zero"
 nameOf 1 = "one"
@@ -51,83 +48,33 @@ nameOf n | n < 0 = "minus " ++ nameOf (-n)
 -- Names of powers of 10 that are multiples of 3 (thousand, million, billion..)
 bigNumbers :: [String]
 bigNumbers = "thousand" : map (++ "illion") (from1to999 ++ from1000toInf) where
+  -- First 999 prefixes (from "m" to "novenonagintanongent").
   from1to999 = let
-    us = ["m","b","tr","quadr","quint","sext","sept","oct","non"]
-    ts = foldl' (\ acc x -> acc ++ x : map (addInfix x) uPfxs) [] tPfxs
-    hs = foldl' (\ acc x -> acc ++ x : map (addInfix x) uPfxsAndtPfxs) [] hPfxs
+    -- Units', tenths', and hundreds' prefixes.
+    uPfxs = ["un","duo","tre","quattuor","quin","se","septe","octo","nove"]
+    tPfxs = ["dec","vigint","trigint","quadragint","quinquagint","sexagint","septuagint","octogint","nonagint"]
+    hPfxs = ["cent","ducent","trecent","quadringent","quingent","sescent","septingent","octingent","nongent"]
+    -- Exceptions for "s", "x", "m", and "n".
+    sExceps = ["vigint","trigint","quadragint","quinquagint","trecent","quadringent","quingent"]
+    xExceps = ["octogint","cent","octingent"]
+    mExceps = ["vigint","octogint","octingent"]
+    nExceps = filter (`notElem` "nonagint":"nongent":mExceps) (tPfxs ++ hPfxs)
+    -- Helper functions.
+    addVowel w = w ++ if any (`isInfixOf` w) (drop 2 tPfxs) then "a" else "i"
     addInfix sx px = px ++ ix ++ sx where
-      ix | sx `elem` sExceps && px == "se" = "s"
-         | sx `elem` xExceps && px == "se" = "x"
-         | sx `elem` mExceps && px `elem` ["septe","nove"] = "m"
-         | sx `elem` nExceps && px `elem` ["septe","nove"] = "n"
-         | sx `elem` (sExceps ++ xExceps) && px == "tre" = "s"
+      ix | px`elem`["septe","nove"] && sx`elem`nExceps = "n"
+         | px`elem`["septe","nove"] && sx`elem`mExceps = "m"
+         | px=="tre" && sx`elem`(sExceps++xExceps) = "s"
+         | px=="se" && sx`elem`sExceps = "s"
+         | px=="se" && sx`elem`xExceps = "x"
          | otherwise = ""
-    uPfxsAndtPfxs = uPfxs ++ map addVowel ts where
-      addVowel w = w ++ if any (`isInfixOf` w) (drop 2 tPfxs) then "a" else "i"
+    -- Combined prefixes.
+    us = ["m","b","tr","quadr","quint","sext","sept","oct","non"]
+    ts = concatMap (\ x -> x : map (addInfix x) uPfxs) tPfxs
+    hs = concatMap (\ x -> x : map (addInfix x) (uPfxs ++ map addVowel ts)) hPfxs
     in us ++ ts ++ hs
+  -- Rest of the prefixes (from "millin" to infinity).
   from1000toInf = let
     bigPfxs n = foldl' (\ acc x -> acc ++ map (x++) ("n" : from1to999)) [] bigs
       where bigs = map (++ (concat $ replicate n "ill") ++ "i") from1to999
     in concatMap bigPfxs [1..]
-
--- Units' prefixes
-uPfxs :: [String]
-uPfxs = ["un"
-        ,"duo"
-        ,"tre"
-        ,"quattuor"
-        ,"quin"
-        ,"se"
-        ,"septe"
-        ,"octo"
-        ,"nove"]
-
--- Tenths' prefixes
-tPfxs :: [String]
-tPfxs = ["dec"
-        ,"vigint"
-        ,"trigint"
-        ,"quadragint"
-        ,"quinquagint"
-        ,"sexagint"
-        ,"septuagint"
-        ,"octogint"
-        ,"nonagint"]
-
--- Hundreds'prefixes
-hPfxs :: [String]
-hPfxs = ["cent"
-        ,"ducent"
-        ,"trecent"
-        ,"quadringent"
-        ,"quingent"
-        ,"sescent"
-        ,"septingent"
-        ,"octingent"
-        ,"nongent"]
- 
--- Exceptions for "s"
-sExceps :: [String]
-sExceps = ["vigint"
-          ,"trigint"
-          ,"quadragint"
-          ,"quinquagint"
-          ,"trecent"
-          ,"quadringent"
-          ,"quingent"]
-
--- Exceptions for "x"
-xExceps :: [String]
-xExceps = ["octogint"
-          ,"cent"
-          ,"octingent"]
-
--- Exceptions for "m"
-mExceps :: [String]
-mExceps = ["vigint"
-          ,"octogint"
-          ,"octingent"]
-          
--- Exceptions for "n"
-nExceps :: [String]
-nExceps = filter (`notElem` "nonagint" : "nongent" : mExceps) (tPfxs ++ hPfxs)
