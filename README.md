@@ -17,39 +17,25 @@ nameOf (10^59052)
 ```
 ### Usage:
 
-Since it only requires the standard prelude, you can just copy the [source code](https://github.com/da-cali/number-to-words/blob/master/src/Converter.hs) and load it in GHCi, or
+Since it only requires the standard prelude, you can just copy the [source code](https://github.com/da-cali/numberToWords/blob/master/src/Converter.hs) and load it in GHCi, or
 
-#### Install the command line application:
+#### Run the app:
 
-1. Install [stack](https://docs.haskellstack.org/en/stable/README/):
+0. Install [stack](https://docs.haskellstack.org/en/stable/README/).
+
+1. Clone repository:
     ```
-    curl -sSL https://get.haskellstack.org/ | sh
+    git clone https://github.com/da-cali/numberToWords
     ```
-    or:
+2. Open folder:
     ```
-    wget -qO- https://get.haskellstack.org/ | sh
+    cd numberToWords
     ```
-2. Clone repository:
-    ```
-    git clone https://github.com/da-cali/number-to-words
-    ```
-3. Open folder:
-    ```
-    cd number-to-words
-    ```
-4. Build project:
+3. Build project:
     ```
     stack build
     ```
-5. Compile:
+4. Run:
     ```
-    stack ghc -- app/Main.hs -o number-to-words
-    ```
-6. Make it executable:
-    ```
-    chmod +x number-to-words
-    ```
-7. Run the application:
-    ```
-    ./number-to-words
+    stack runhaskell app/Main.hs
     ```
