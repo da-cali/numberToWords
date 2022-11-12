@@ -2,7 +2,9 @@ module Converter where
 
 import Data.List
 
--- Returns the name of the input integer.
+-- Returns the name of the input integer. The function uses the list bigNumbers
+-- containing names of powers of 10 that are multiples of 3 (such as thousand,
+-- million, billion, etc.)
 nameOf :: Integer -> String
 nameOf 0 = "zero"
 nameOf 1 = "one"
@@ -32,53 +34,47 @@ nameOf 60 = "sixty"
 nameOf 70 = "seventy"
 nameOf 80 = "eighty"
 nameOf 90 = "ninety"
-nameOf n | n < 0 = "minus " ++ nameOf (-n)
-         | n < 100 = nameOf (n - n`mod`10) ++ '-' : nameOf (n`mod`10)
-         | n < 1000 = nameOf (n`div`100) ++ " hundred" ++ nameOfRemainder
-         | otherwise = getNameFrom labeledPowers 
-         where nameOfRemainder = if n`mod`100 == 0 then "" else ' ' : nameOf (n`mod`100)
-               labeledPowers = zip bigNumbers [3,6..]
-               getNameFrom [] = ""
-               getNameFrom ((l,p):rest) = if n >= 10^(p+3) 
-                                              then getNameFrom rest
-                                              else nameOf (n`div`10^p)
-                                                ++ ' ' : l
-                                                ++ if n`mod`10^p == 0 then "" else ", "
-                                                ++ nameOf (n`mod`10^p)
-                            
--- Names of powers of 10 that are multiples of 3 (thousand, million, billion..)
-bigNumbers :: [String]
-bigNumbers = "thousand" : fmap (++ "illion") (from1to999 ++ from1000toInf) where
-    -- First 999 prefixes (from "m" to "novenonagintanongent").
-    from1to999 =
-        let -- Units', tenths', and hundreds' prefixes.
-            uPfxs = ["un","duo","tre","quattuor","quin","se","septe","octo","nove"]
-            tPfxs = ["dec","vigint","trigint","quadragint","quinquagint"
-                    ,"sexagint","septuagint","octogint","nonagint"]
-            hPfxs = ["cent","ducent","trecent","quadringent","quingent"
-                    ,"sescent","septingent","octingent","nongent"]
-            -- Exceptions for "s", "x", "m", and "n".
-            xExceps = ["octogint","cent","octingent"]
-            mExceps = ["vigint","octogint","octingent"]
-            sExceps = ["vigint","trigint","quadragint","quinquagint"
-                      ,"trecent","quadringent","quingent"]
-            nExceps = filter (`notElem` "nonagint":"nongent":mExceps) (tPfxs ++ hPfxs)
-            -- Helper functions.
-            addVowel w = w ++ if any (`isInfixOf` w) (drop 2 tPfxs) then "a" else "i"
-            addInfix sx px = px ++ ix ++ sx
-                where ix | px`elem`["septe","nove"] && sx`elem`nExceps = "n"
-                         | px`elem`["septe","nove"] && sx`elem`mExceps = "m"
-                         | px == "tre" && sx`elem`(sExceps ++ xExceps) = "s"
-                         | px == "se" && sx`elem`sExceps = "s"
-                         | px == "se" && sx`elem`xExceps = "x"
-                         | otherwise = ""
-            -- Combined prefixes.
-            us = ["m","b","tr","quadr","quint","sext","sept","oct","non"]
-            ts = concatMap (\ x -> x : fmap (addInfix x) uPfxs) tPfxs
-            hs = concatMap (\ x -> x : fmap (addInfix x) (uPfxs ++ fmap addVowel ts)) hPfxs
-        in us ++ ts ++ hs
-    -- Rest of the prefixes (from "millin" to infinity).
-    from1000toInf =
-        let bigPfxs n = foldl' (\ acc x -> acc ++ fmap (x++) ("n" : from1to999)) [] bigs
-                where bigs = fmap (++ concat (replicate n "ill") ++ "i") from1to999
-        in concatMap bigPfxs [1..]
+nameOf n
+    | n < 0 = "minus " ++ nameOf (-n)
+    | n < 100 = nameOf (n - n`mod`10) ++ '-' : nameOf (n`mod`10)
+    | n < 1000 = nameOf (n`div`100) ++ " hundred" ++ nameOfRemainder
+    | otherwise = getNameFrom (zip bigNumbers [3,6..])
+    where nameOfRemainder = if n`mod`100 == 0 then "" else ' ' : nameOf (n`mod`100)
+          getNameFrom [] = ""
+          getNameFrom ((l,p):rest) = 
+              let nameParts = [ nameOf (n`div`10^p), ' ' : l, ending ] where
+                      ending = if n`mod`10^p == 0 then "" else ", " ++ nameOf (n`mod`10^p)
+              in if n >= 10^(p+3) then getNameFrom rest else concat nameParts
+          bigNumbers = "thousand" : fmap (++ "illion") (from1to999 ++ from1000toInf) where
+              from1to999 = 
+                  let units = ["m", "b", "tr", "quadr", "quint", "sext", "sept", "oct", "non"]
+                      tenths = concatMap (\ x -> x : fmap (addInfix x) uPrefixes) tPrefixes
+                      hundreths = concatMap (\ x -> x : fmap (addInfix x) composedTenths) hPrefixes
+                          where composedTenths = (uPrefixes ++ fmap addVowel tenths)
+                  in units ++ tenths ++ hundreths where
+                         uPrefixes = [ "un", "duo", "tre", "quattuor", "quin"
+                                     , "se", "septe", "octo", "nove"]
+                         tPrefixes = [ "dec", "vigint", "trigint", "quadragint", "quinquagint"
+                                     , "sexagint", "septuagint", "octogint", "nonagint"]
+                         hPrefixes = [ "cent", "ducent", "trecent", "quadringent", "quingent"
+                                     , "sescent", "septingent", "octingent", "nongent"]
+                         addVowel w = w ++ if any (`isInfixOf` w) (drop 2 tPrefixes) then "a" else "i"
+                         addInfix sx px = 
+                             let ix | px`elem`["septe", "nove"] && sx`elem`nExceptions = "n"
+                                    | px`elem`["septe", "nove"] && sx`elem`mExceptions = "m"
+                                    | px == "tre" && sx`elem`(sExceptions ++ xExceptions) = "s"
+                                    | px == "se" && sx`elem`sExceptions = "s"
+                                    | px == "se" && sx`elem`xExceptions = "x"
+                                    | otherwise = ""
+                                    where mExceptions = [ "vigint", "octogint", "octingent" ]
+                                          nExceptions = 
+                                              filter (`notElem` "nonagint" : "nongent" : mExceptions)
+                                                     (tPrefixes ++ hPrefixes)
+                                          sExceptions = [ "vigint", "trigint", "quadragint", "quinquagint"
+                                                        , "trecent", "quadringent", "quingent" ]
+                                          xExceptions = [ "octogint", "cent", "octingent" ]
+                             in px ++ ix ++ sx
+              from1000toInf = 
+                  let bigPrefixes n = foldl' (\ acc x -> acc ++ fmap (x++) ("n" : from1to999)) [] bigs
+                          where bigs = fmap (++ concat (replicate n "ill") ++ "i") from1to999
+                  in concatMap bigPrefixes [1..]
